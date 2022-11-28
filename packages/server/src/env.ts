@@ -50,11 +50,11 @@ const defaultEnvValues: EnvVariables = {
 	DB_SLOW_QUERY_LOG_MIN_DURATION: 1000,
 	DB_AUTO_MIGRATION: true,
 
-	POSTGRES_PASSWORD: 'joplin',
-	POSTGRES_DATABASE: 'joplin',
-	POSTGRES_USER: 'joplin',
-	POSTGRES_HOST: '',
-	POSTGRES_PORT: 5432,
+	DB_PASSWORD: 'joplin',
+	DB_DATABASE: 'joplin',
+	DB_USER: 'joplin',
+	DB_HOST: '',
+	DB_PORT: 5432,
 
 	// This must be the full path to the database file
 	SQLITE_DATABASE: '',
@@ -119,11 +119,11 @@ export interface EnvVariables {
 	DB_SLOW_QUERY_LOG_MIN_DURATION: number;
 	DB_AUTO_MIGRATION: boolean;
 
-	POSTGRES_PASSWORD: string;
-	POSTGRES_DATABASE: string;
-	POSTGRES_USER: string;
-	POSTGRES_HOST: string;
-	POSTGRES_PORT: number;
+	DB_PASSWORD: string;
+	DB_DATABASE: string;
+	DB_USER: string;
+	DB_HOST: string;
+	DB_PORT: number;
 
 	SQLITE_DATABASE: string;
 

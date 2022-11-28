@@ -30,22 +30,25 @@ The following tags are available:
 
 ## Setup the database
 
-You can setup the container to either use an existing PostgreSQL server, or connect it to a new database using docker-compose.
+You can setup the container to either use an existing database server, or connect it to a new database using docker-compose. Currently supported database servers:
+  * PostgreSQL (pg)
+  * MariaDB (mariadb)
+  * MySQL (mysql)
 
 ### Using an existing PostgreSQL server
 
-To use an existing PostgresSQL server, set the following environment variables in the .env file:
+To use an existing database server, set the following environment variables in the .env file:
 
 ```conf
 DB_CLIENT=pg
-POSTGRES_PASSWORD=joplin
-POSTGRES_DATABASE=joplin
-POSTGRES_USER=joplin
-POSTGRES_PORT=5432
-POSTGRES_HOST=localhost
+DB_PASSWORD=joplin
+DB_DATABASE=joplin
+DB_USER=joplin
+DB_PORT=5432
+DB_HOST=localhost
 ```
 
-Ensure that the provided database and user exist as Joplin Server will not create them. When running on macOS or Windows through Docker Desktop, a mapping of localhost is made automatically. On Linux, you can add `--net=host --add-host=host.docker.internal:127.0.0.1` to the `docker run` command line to make the mapping happen. Any other `POSTGRES_HOST` than localhost or 127.0.0.1 should work as expected without further action.
+Ensure that the provided database and user exist as Joplin Server will not create them. When running on macOS or Windows through Docker Desktop, a mapping of localhost is made automatically. On Linux, you can add `--net=host --add-host=host.docker.internal:127.0.0.1` to the `docker run` command line to make the mapping happen. Any other `DB_HOST` than localhost or 127.0.0.1 should work as expected without further action.
 
 ### Using docker-compose
 

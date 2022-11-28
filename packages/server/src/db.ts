@@ -86,7 +86,7 @@ export function makeKnexConfig(dbConfig: DatabaseConfig): KnexDatabaseConfig {
 
 	return {
 		client: dbConfig.client,
-		useNullAsDefault: dbConfig.client === 'sqlite3',
+		useNullAsDefault: ['sqlite3'].includes(dbConfig.client),
 		asyncStackTraces: dbConfig.asyncStackTraces,
 		connection,
 	};
@@ -122,7 +122,11 @@ export const clientType = (db: DbConnection): DatabaseConfigClient => {
 };
 
 export const returningSupported = (db: DbConnection) => {
-	return clientType(db) === DatabaseConfigClient.PostgreSQL;
+	return [DatabaseConfigClient.PostgreSQL].includes(clientType(db));
+};
+
+export const isMysqlOrMariadb = (db: DbConnection) => {
+	return clientType(db) === DatabaseConfigClient.MysqlOrMariadb;
 };
 
 export const isPostgres = (db: DbConnection) => {
@@ -134,8 +138,13 @@ export const isSqlite = (db: DbConnection) => {
 };
 
 export const setCollateC = async (db: DbConnection, tableName: string, columnName: string): Promise<void> => {
-	if (!isPostgres(db)) return;
-	await db.raw(`ALTER TABLE ${tableName} ALTER COLUMN ${columnName} SET DATA TYPE character varying(32) COLLATE "C"`);
+	switch (clientType(db)) {
+	case DatabaseConfigClient.PostgreSQL:
+		await db.raw(`ALTER TABLE ${tableName} ALTER COLUMN ${columnName} SET DATA TYPE character varying(32) COLLATE "C"`);
+		break;
+	default:
+		return;
+	}
 };
 
 function makeSlowQueryHandler(duration: number, connection: any, sql: string, bindings: any[]) {
@@ -377,6 +386,9 @@ export async function truncateTables(db: DbConnection): Promise<void> {
 
 function isNoSuchTableError(error: any): boolean {
 	if (error) {
+		// MySQL errors: ErrNo=1106 SqlState=42S02 || ErrNo=1051 SqlState=42S02
+		if (['ER_NO_SUCH_TABLE','ER_BAD_TABLE_ERROR'].includes(error.code)) return true;
+
 		// Postgres error: 42P01: undefined_table
 		if (error.code === '42P01') return true;
 
@@ -389,6 +401,9 @@ function isNoSuchTableError(error: any): boolean {
 
 export function isUniqueConstraintError(error: any): boolean {
 	if (error) {
+		// MySQL errors: ErrNo=1169	SqlState=23000 - Can't write, because of unique constraint, to table '%s'
+		if (['ER_DUP_UNIQUE'].includes(error.code)) return true;
+
 		// Postgres error: 23505: unique_violation
 		if (error.code === '23505') return true;
 

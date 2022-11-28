@@ -53,6 +53,7 @@ export interface AppContext extends Koa.Context {
 export enum DatabaseConfigClient {
 	Null = 'null',
 	PostgreSQL = 'pg',
+	MysqlOrMariadb = 'mysql',
 	SQLite = 'sqlite3',
 }
 

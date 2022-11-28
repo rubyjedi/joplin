@@ -18,14 +18,14 @@ export function runningInDocker(): boolean {
 }
 
 function databaseHostFromEnv(runningInDocker: boolean, env: EnvVariables): string {
-	if (env.POSTGRES_HOST) {
+	if (env.DB_HOST) {
 		// When running within Docker, the app localhost is different from the
 		// host's localhost. To access the latter, Docker defines a special host
 		// called "host.docker.internal", so here we swap the values if necessary.
-		if (runningInDocker && ['localhost', '127.0.0.1'].includes(env.POSTGRES_HOST)) {
+		if (runningInDocker && ['localhost', '127.0.0.1'].includes(env.DB_HOST)) {
 			return 'host.docker.internal';
 		} else {
-			return env.POSTGRES_HOST;
+			return env.DB_HOST;
 		}
 	}
 
@@ -41,14 +41,26 @@ function databaseConfigFromEnv(runningInDocker: boolean, env: EnvVariables): Dat
 		autoMigration: env.DB_AUTO_MIGRATION,
 	};
 
+	if (['mysql','mariadb'].includes(env.DB_CLIENT)) {
+		return {
+			...baseConfig,
+			client: DatabaseConfigClient.MysqlOrMariadb,
+			name: env.DB_DATABASE,
+			user: env.DB_USER,
+			password: env.DB_PASSWORD,
+			port: env.DB_PORT,
+			host: databaseHostFromEnv(runningInDocker, env) || 'localhost',
+		};
+	}
+
 	if (env.DB_CLIENT === 'pg') {
 		return {
 			...baseConfig,
 			client: DatabaseConfigClient.PostgreSQL,
-			name: env.POSTGRES_DATABASE,
-			user: env.POSTGRES_USER,
-			password: env.POSTGRES_PASSWORD,
-			port: env.POSTGRES_PORT,
+			name: env.DB_DATABASE,
+			user: env.DB_USER,
+			password: env.DB_PASSWORD,
+			port: env.DB_PORT,
 			host: databaseHostFromEnv(runningInDocker, env) || 'localhost',
 		};
 	}

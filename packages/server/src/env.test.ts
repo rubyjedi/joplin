@@ -18,7 +18,7 @@ describe('env', function() {
 	it('should parse env values', async function() {
 		const result = parseEnv({
 			DB_CLIENT: 'pg',
-			POSTGRES_PORT: '123',
+			DB_PORT: '123',
 			MAILER_ENABLED: 'true',
 			SIGNUP_ENABLED: 'false',
 			TERMS_ENABLED: '0',
@@ -26,7 +26,7 @@ describe('env', function() {
 		});
 
 		expect(result.DB_CLIENT).toBe('pg');
-		expect(result.POSTGRES_PORT).toBe(123);
+		expect(result.DB_PORT).toBe(123);
 		expect(result.MAILER_ENABLED).toBe(true);
 		expect(result.SIGNUP_ENABLED).toBe(false);
 		expect(result.TERMS_ENABLED).toBe(false);
@@ -34,12 +34,12 @@ describe('env', function() {
 	});
 
 	it('should overrides default values', async function() {
-		expect(parseEnv({}).POSTGRES_USER).toBe('joplin');
-		expect(parseEnv({}, { POSTGRES_USER: 'other' }).POSTGRES_USER).toBe('other');
+		expect(parseEnv({}).DB_USER).toBe('joplin');
+		expect(parseEnv({}, { DB_USER: 'other' }).DB_USER).toBe('other');
 	});
 
 	it('should validate values', async function() {
-		await expectThrow(async () => parseEnv({ POSTGRES_PORT: 'notanumber' }));
+		await expectThrow(async () => parseEnv({ DB_PORT: 'notanumber' }));
 		await expectThrow(async () => parseEnv({ MAILER_ENABLED: 'TRUE' }));
 	});
 
