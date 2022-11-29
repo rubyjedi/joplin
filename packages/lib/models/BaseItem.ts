@@ -476,7 +476,7 @@ export default class BaseItem extends BaseModel {
 
 	static async unserialize(content: string) {
 		const lines = content.split('\n');
-		let output: any = {};
+		let output: any = { type_: BaseItem.TYPE_NOTE };
 		let state = 'readingProps';
 		const body: string[] = [];
 
