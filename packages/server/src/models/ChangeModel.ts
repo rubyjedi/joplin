@@ -391,6 +391,9 @@ export default class ChangeModel extends BaseModel<Change> {
 	}
 
 	public async save(change: Change, options: SaveOptions = {}): Promise<Change> {
+		// LALEE: (hack hack hack) Add guard against NULL/UNDEFINED text fields 'cause MySQL doesn't set default values on TEXT or BINARY columns.
+		['item_name','previous_item'].forEach(colName=>{ (change as any)[colName] = (change as any)[colName] || ''; });
+
 		const savedChange = await super.save(change, options);
 		ChangeModel.eventEmitter.emit('saved');
 		return savedChange;

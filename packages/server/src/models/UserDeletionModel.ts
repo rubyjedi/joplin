@@ -56,6 +56,9 @@ export default class UserDeletionModel extends BaseModel<UserDeletion> {
 			process_data: options.processData ? 1 : 0,
 		};
 
+		// LALEE: (hack hack hack) Add guard against NULL/UNDEFINED text fields 'cause MySQL doesn't set default values on TEXT or BINARY columns.
+		['error'].forEach(colName=>{ (o as any)[colName] = (o as any)[colName] || ''; });
+
 		await this.db(this.tableName).insert(o);
 
 		return this.byUserId(userId);

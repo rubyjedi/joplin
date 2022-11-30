@@ -33,6 +33,9 @@ export default class EmailModel extends BaseModel<Email> {
 			if (existingEmail) return null; // noop - the email has already been sent
 		}
 
+		// LALEE: (hack hack hack) Add guard against NULL/UNDEFINED text fields 'cause MySQL doesn't set default values on TEXT or BINARY columns.
+		['error','key', 'recipient_email','recipient_name'].forEach(colName=>{ (email as any)[colName] = (email as any)[colName] || ''; });
+
 		const output = await super.save({ ...email });
 		EmailModel.eventEmitter.emit('queued');
 		return output;
